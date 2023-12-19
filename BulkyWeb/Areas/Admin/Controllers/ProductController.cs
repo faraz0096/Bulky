@@ -122,7 +122,7 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
       
         #region APICALLS
         [HttpGet]
-        public IActionResult GetAll()
+		public IActionResult GetAll()
         {
             List<Product> objProduct = _unitOfWork.Product.GetAll(includeProperties: "Category").ToList();
             return Json(new { data = objProduct });

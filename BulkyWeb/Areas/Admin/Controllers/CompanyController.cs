@@ -62,10 +62,10 @@ namespace BulkyBookWeb.Areas.Admin.Controllers
 		#region API CALLS
 
 		[HttpGet]
-		public IActionResult GetlAll()
+		public IActionResult GetAll()
 		{
 			List<Company> objCompany = _unitOfWork.Company.GetAll().ToList();
-			return Json( new {data = objCompany });
+			return Json(new { data = objCompany });
 		}
 		[HttpDelete]
 		public IActionResult Delete(int? id)
