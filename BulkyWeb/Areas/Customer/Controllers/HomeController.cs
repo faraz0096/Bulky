@@ -1,4 +1,3 @@
-using BulkyBook.DataAccess.Repository;
 using BulkyBook.DataAccess.Repository.IRepository;
 using BulkyBook.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -28,12 +27,13 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
 
 		public IActionResult Details(int productId)
 		{
-            ShoppingCart cart = new()
-            {
-				Product = _unitOfWork.Product.Get(u => u.Id == productId, includeProperties: "Category"),
+            //to retreive count we have to use Shopping cart model because count is in ShoppingCart model
+            ShoppingCart cart = new() {
+            
+                Product = _unitOfWork.Product.Get(u => u.Id  == productId, includeProperties: "Category"),
                 Count = 1,
-                ProductId = productId
-            };
+				ProductId = productId
+			};
 			
 			return View(cart);
 		}
@@ -41,10 +41,28 @@ namespace BulkyBookWeb.Areas.Customer.Controllers
         [Authorize]
 		public IActionResult Details(ShoppingCart shoppingCart)
 		{
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-	
-			return View();
+            var claimsIndetity = (ClaimsIdentity)User.Identity;//get userid of logged in user
+            var userId = claimsIndetity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            shoppingCart.ApplicationUserid = userId;
+
+            ShoppingCart cartFromDb = _unitOfWork.ShoppingCart.Get(u => u.ApplicationUserid == userId
+            && u.ProductId == shoppingCart.ProductId);
+            if (cartFromDb != null)
+            {
+                //shopping cart already exist
+                cartFromDb.Count += shoppingCart.Count;
+                _unitOfWork.ShoppingCart.Update(cartFromDb);
+                
+            }
+            else
+            {
+				_unitOfWork.ShoppingCart.Add(shoppingCart);
+			}
+            _unitOfWork.Save();
+
+            TempData["success"] = "Cart Updated Successfully";
+
+            return RedirectToAction("Index");
 		}
 
 

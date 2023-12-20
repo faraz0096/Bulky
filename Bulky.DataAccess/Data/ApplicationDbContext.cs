@@ -16,9 +16,9 @@ namespace BulkyBook.DataAccess.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<Company> companies { get; set; }
-        public DbSet<ShoppingCart> ShoppingCarts { get; set; }
+		public DbSet<ShoppingCart> ShoppingCart { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder); //require when add IdentityDbContext
 			modelBuilder.Entity<Category>().HasData(
